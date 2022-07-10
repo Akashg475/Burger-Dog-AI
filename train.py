@@ -1,12 +1,13 @@
-from operator import mod
-from stable_baselines3 import PPO as algo
+import os
+
+from sb3_contrib import TRPO as algo
 import game_interface
 
 train_env = game_interface.burger_dog
-path = f"trained_models\\{algo.__name__}"
+path = os.path.join(os.path.dirname(__file__), "trained_models", algo.__name__)
 try:
     model = algo.load(path, env=train_env)
-except:
+except FileNotFoundError:
     model = algo("MlpPolicy", train_env)
     print("Akash")
 
@@ -16,7 +17,7 @@ for i in range(100):
 
     # Save 
     model.save(path)
-    
+
     # Evaluate Model 5 times
     for j in range(5):
         done = False
@@ -26,20 +27,11 @@ for i in range(100):
         while not done:
 
             actions, _ = model.predict(obs, deterministic=True)
-            actions[0]-=1
-            actions[1]-=1
-            obs, reward, done, info = game_interface.step(actions)
-
+            obs, reward, done, info = game_interface.step(train_env.action_int_to_array(actions))
             episode_reward += reward
             game_interface.update_display()
 
             for event in game_interface.pygame.event.get():
                 pass
-            
+
         print(f"{i} {j} Score = {episode_reward}")
-    
-
-
-
-
-

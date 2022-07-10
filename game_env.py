@@ -5,6 +5,9 @@ import numpy as np
 
 class BurgerDogEnvironment(Env):
 
+    def render(self, mode="human"):
+        pass
+
     def __init__(self, game_width, game_height):
 
         self.GAME_WIDTH = game_width
@@ -30,26 +33,27 @@ class BurgerDogEnvironment(Env):
         self.boost_level = self.STARTING_BOOST_LEVEL
         self.burger_velocity = self.STARTING_BURGER_VELOCITY
 
-        self.action_space = spaces.MultiDiscrete([3, 3, 2])
-        # player positionx, y, boost level, burger positionx, y, burger speed
+        self.action_space = spaces.Discrete(18)
+
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0, 0, -self.BUFFER_DISTANCE, 0]),
             high=np.array([self.GAME_WIDTH, self.GAME_HEIGHT, 100, self.GAME_WIDTH, self.GAME_HEIGHT, 20]))
 
     def reset_game_variables(self):
-        self.player_rect.centerx = self.GAME_WIDTH//2
+        self.player_rect.centerx = self.GAME_WIDTH // 2
         self.player_rect.bottom = self.GAME_HEIGHT - 10
 
         self.burger_rect.topleft = (
-            randint(0, self.GAME_HEIGHT-self.burger_rect.width), -self.BUFFER_DISTANCE)
+            randint(0, self.GAME_WIDTH - self.burger_rect.width), -self.BUFFER_DISTANCE)
         self.burger_velocity = self.STARTING_BURGER_VELOCITY
 
         self.boost_level = self.STARTING_BOOST_LEVEL
         self.burger_points = 0
 
-    
     def get_observation(self):
-        return [*self.player_rect.center, self.boost_level, *self.burger_rect.center, self.burger_velocity]
+        return np.array(
+            [*self.player_rect.center, self.boost_level, *self.burger_rect.center, self.burger_velocity]).astype(
+            np.float32)
 
     def reset(self):
         self.reset_game_variables()
@@ -60,27 +64,28 @@ class BurgerDogEnvironment(Env):
         return self.get_observation()
 
     def step(self, action: int):
-
+        converted_action_space = self.action_int_to_array(action)
+        # print(action, converted_action_space)
         info = {}
         reward = 0
 
-        if action[2] and self.boost_level > 0:
+        if converted_action_space[2] and self.boost_level > 0:
             self.player_velocity = self.PLAYER_BOOST_VELOCITY
             self.boost_level -= 1
         else:
             self.player_velocity = self.PLAYER_NORMAL_VELOCITY
 
-        if action[0] == -1:  # Move Left
+        if converted_action_space[0] == 1:  # Move Left
             self.player_rect.left = max(
                 0, self.player_rect.left - self.player_velocity)
-        elif action[0] == 1:  # Move Right
+        elif converted_action_space[0] == 2:  # Move Right
             self.player_rect.right = min(
                 self.GAME_WIDTH, self.player_rect.right + self.player_velocity)
 
-        if action[1] == -1:  # Move up
+        if converted_action_space[1] == 1:  # Move up
             self.player_rect.top = max(
                 100, self.player_rect.top - self.player_velocity)
-        elif action[1] == 1:  # Move Down
+        elif converted_action_space[1] == 2:  # Move Down
             self.player_rect.bottom = min(
                 self.GAME_HEIGHT, self.player_rect.bottom + self.player_velocity)
 
@@ -103,11 +108,10 @@ class BurgerDogEnvironment(Env):
             self.burger_eaten += 1
 
             info['Burger Eaten'] = True
-            
 
-            self.boost_level = min(self.boost_level+25, 100)
+            self.boost_level = min(self.boost_level + 25, 100)
             self.burger_rect.topleft = (
-                randint(0, self.GAME_HEIGHT-self.burger_rect.width), -self.BUFFER_DISTANCE)
+                randint(0, self.GAME_HEIGHT - self.burger_rect.width), -self.BUFFER_DISTANCE)
 
             self.burger_velocity += self.BURGER_ACCELARATION
 
@@ -119,6 +123,24 @@ class BurgerDogEnvironment(Env):
         else:
             done = False
 
-        return self.get_observation(),reward, done, info
+        return self.get_observation(), reward, done, info
 
+    def action_int_to_array(self, action):
+        result = [0,0,0]
+        result[0] = action//6
+        result[1] = (action%6)//2
+        result[2] = action%2
+        return result
 
+    def action_array_to_int(self, action_array):
+        return action_array[0] * 6 + action_array[1] * 2 + action_array[2]
+
+# if __name__ == "__main__":
+#     from stable_baselines3.common.env_checker import check_env
+#     import pygame
+#     x = BurgerDogEnvironment(500,600)
+#     x.player_rect = pygame.Rect(0, 0, 32, 32)
+#     x.burger_rect = pygame.Rect(0, 0, 32, 32)
+#     print(x.observation_space)
+#     print(x.reset())
+#     check_env(x)
