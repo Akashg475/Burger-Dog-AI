@@ -72,8 +72,6 @@ burger_dog.player_rect = player_image.get_rect()
 burger_image = pygame.image.load("assets\\burger.png")
 burger_dog.burger_rect = burger_image.get_rect()
 
-bg_music.play(-1)
-
 def update_display():
     display_surface.fill(BLACK)
 
@@ -101,7 +99,7 @@ def step(action):
     if action[2]:
         HUD_ITEMS['boost_hud'].update_variable(burger_dog.boost_level)
 
-    _,_,done,info = burger_dog.step(action)
+    obs,reward,done,info = burger_dog.step(action)
 
     if info.get('Burger Miss', None):
         miss_sound.play()
@@ -114,42 +112,51 @@ def step(action):
         HUD_ITEMS['score_hud'].update_variable(burger_dog.score)
         HUD_ITEMS['burger_eaten_hud'].update_variable(burger_dog.burger_eaten)
         HUD_ITEMS['boost_hud'].update_variable(burger_dog.boost_level)
-    
-    if done:
+
+
+    return obs, reward, done, info
+
+def game_over():
         
-        game_over_text = font.render("Final Score: "+ str(burger_dog.score), True, ORANGE)
-        game_over_rect = game_over_text.get_rect()
-        game_over_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+    game_over_text = font.render("Final Score: "+ str(burger_dog.score), True, ORANGE)
+    game_over_rect = game_over_text.get_rect()
+    game_over_rect.center = (WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
-        continue_text = font.render("Press any key to play again", True, ORANGE)
-        continue_rect = continue_text.get_rect()
-        continue_rect.centerx = WINDOW_WIDTH//2
-        continue_rect.y = game_over_rect.bottom + 10
+    continue_text = font.render("Press any key to play again", True, ORANGE)
+    continue_rect = continue_text.get_rect()
+    continue_rect.centerx = WINDOW_WIDTH//2
+    continue_rect.y = game_over_rect.bottom + 10
 
-        bg_music.stop()
+    bg_music.stop()
 
-        while done:
+    is_paused = True
+    while is_paused:
 
-            display_surface.blit(game_over_text, game_over_rect)
-            display_surface.blit(continue_text, continue_rect)
+        display_surface.blit(game_over_text, game_over_rect)
+        display_surface.blit(continue_text, continue_rect)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit(0)
-                elif event.type == pygame.KEYDOWN:
-                    done = False
-                    burger_dog.reset()
-                    
-                    HUD_ITEMS['boost_hud'].update_variable(burger_dog.boost_level)
-                    HUD_ITEMS['player_lives_hud'].update_variable(burger_dog.player_lives)
-                    HUD_ITEMS['score_hud'].update_variable(burger_dog.score)
-                    HUD_ITEMS['burger_eaten_hud'].update_variable(burger_dog.burger_eaten)
-                    HUD_ITEMS['burger_points_hud'].update_variable(burger_dog.burger_points)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
+            elif event.type == pygame.KEYDOWN:
+                is_paused = False
+                burger_dog.reset()
+                
+                update_HUD()
 
-                    bg_music.play(-1)
+                bg_music.play(-1)
 
-            
-            pygame.display.update()
+        
+        pygame.display.update()
+
+def update_HUD():
+    HUD_ITEMS['boost_hud'].update_variable(burger_dog.boost_level)
+    HUD_ITEMS['player_lives_hud'].update_variable(burger_dog.player_lives)
+    HUD_ITEMS['score_hud'].update_variable(burger_dog.score)
+    HUD_ITEMS['burger_eaten_hud'].update_variable(burger_dog.burger_eaten)
+    HUD_ITEMS['burger_points_hud'].update_variable(burger_dog.burger_points)
 
 if __name__ == "__main__":
+    
+    bg_music.play(-1)
     import human

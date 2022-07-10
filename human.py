@@ -2,6 +2,7 @@ import game_interface
 from game_interface import pygame
 
 game_interface.burger_dog.reset()
+game_interface.bg_music.play(-1)
 
 running = True
 while running:
@@ -29,5 +30,8 @@ while running:
         action[2] = 1
     
     
-    game_interface.step(action)
+    _,_,done,_ = game_interface.step(action)
+    if done:
+        game_interface.game_over()
+    
     
