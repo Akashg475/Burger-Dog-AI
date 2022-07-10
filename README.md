@@ -17,12 +17,30 @@ Run the command in terminal
 To play the game: run the following command
 
     python human.py
-To train a new agent (list of options available in train.py): run the following command
+To train a new agent: edit the agent name you want to train in train.py (line 2)
+
+The new agent is saved in *trained_models/*
+
+    Possible_Agents = ["A2C", "DQN", "PPO", "ARS", "MaskablePPO", "QRDQN", "TRPO"]
+    AGENT_NAME = "A2C"
+
+
+Run the following command in terminal
 
     python train.py
-To watch a trained agent play the game: 
 
-Change the agent name in enjoy.py\
+
+
+
+To watch your trained agent play the game: 
+
+Change the agent name in enjoy.py (line 2)
+
+    Possible_Agents = ["A2C", "DQN", "PPO", "ARS", "MaskablePPO", "QRDQN", "TRPO"]
+    AGENT_NAME = "A2C"
+
+Change "trained_models" to "final_trained_models" in line 26 to enjoy pre-trained agents
+
 run the following command
 
     python enjoy.py

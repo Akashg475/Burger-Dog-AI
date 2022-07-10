@@ -1,15 +1,33 @@
-import os
+Possible_Agents = ["A2C", "DQN", "PPO", "ARS", "MaskablePPO", "QRDQN", "TRPO"]
+AGENT_NAME = "A2C"
 
-from sb3_contrib import TRPO as algo
+
+import os
 import game_interface
 
+if AGENT_NAME == "A2C":
+    from stable_baselines3 import A2C as ALGO
+elif AGENT_NAME == "DQN":
+    from stable_baselines3 import DQN as ALGO
+elif AGENT_NAME == "PPO":
+    from stable_baselines3 import PPO as ALGO
+elif AGENT_NAME == "ARS":
+    from sb3_contrib import ARS as ALGO
+elif AGENT_NAME == "MaskablePPO":
+    from sb3_contrib import MaskablePPO as ALGO
+elif AGENT_NAME =="QRDQN":
+    from sb3_contrib import QRDQN as ALGO
+elif AGENT_NAME == "TRPO":
+    from sb3_contrib import TRPO as ALGO
+else:
+    raise ValueError("Agent Name not in Possible Agents")
+
 train_env = game_interface.burger_dog
-path = os.path.join(os.path.dirname(__file__), "trained_models", algo.__name__)
+path = os.path.join(os.path.dirname(__file__), "trained_models", ALGO.__name__)
 try:
-    model = algo.load(path, env=train_env)
+    model = ALGO.load(path, env=train_env)
 except FileNotFoundError:
-    model = algo("MlpPolicy", train_env)
-    print("Akash")
+    model = ALGO("MlpPolicy", train_env)
 
 for i in range(100):
     # Learn
@@ -34,4 +52,5 @@ for i in range(100):
             for event in game_interface.pygame.event.get():
                 pass
 
-        print(f"{i} {j} Score = {episode_reward}")
+        print(f"Evaluation No. {i} - Episode No.{j} - Score = {episode_reward}")
+    print()
