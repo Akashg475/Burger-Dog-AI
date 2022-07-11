@@ -61,4 +61,8 @@ These agents were trained for same number of episodes. The score is the average 
         <td> ARS </td>
         <td> 4172.58 </td>
     </tr>
+    <tr>
+        <td> PPO </td>
+        <td> 20878.59 </td>
+    </tr>
 </table>

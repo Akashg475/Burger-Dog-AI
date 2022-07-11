@@ -1,7 +1,7 @@
 import game_interface
 import os
 Possible_Agents = ["A2C", "DQN", "PPO", "ARS", "MaskablePPO", "QRDQN", "TRPO"]
-AGENT_NAME = "ARS"
+AGENT_NAME = "PPO"
 
 
 if AGENT_NAME == "A2C":
