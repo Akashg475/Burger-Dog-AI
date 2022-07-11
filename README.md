@@ -44,3 +44,21 @@ Change "trained_models" to "final_trained_models" in line 26 to enjoy pre-traine
 run the following command
 
     python enjoy.py
+
+#
+## Benchmarks
+These agents were trained for same number of episodes. The score is the average over 100 games.
+<table>
+    <tr>
+        <th> Name </th>
+        <th> Score </th>
+    </tr>
+    <tr>
+        <td> A2C </td>
+        <td> 3492.78 </td>
+    </tr>
+    <tr>
+        <td> ARS </td>
+        <td> 4172.58 </td>
+    </tr>
+</table>
