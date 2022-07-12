@@ -39,7 +39,7 @@ Change the agent name in enjoy.py (line 2)
     Possible_Agents = ["A2C", "DQN", "PPO", "ARS", "MaskablePPO", "QRDQN", "TRPO"]
     AGENT_NAME = "A2C"
 
-Change "trained_models" to "final_trained_models" in line 26 to enjoy pre-trained agents
+Change "trained_models" to "final_trained_models" in line 28 to enjoy pre-trained agents
 
 run the following command
 
@@ -65,4 +65,9 @@ These agents were trained for same number of episodes. The score is the average 
         <td> PPO </td>
         <td> 20878.59 </td>
     </tr>
+    <tr>
+        <td> TRPO </td>
+        <td> 22862.22 </td>
+    </tr>
+    
 </table>
